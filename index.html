@@ -155,13 +155,13 @@
           </div>
           <br /><br />
           <figure class="cd-image-container">
-            <img src="assets/3dproposal.png" alt="Original Image">
+            <img src="assets/seg.png" alt="Original Image">
             <span class="cd-image-label" data-type="original">
             </span>
 
             <div class="cd-resize-img" style="border-right: 2px dotted rgb(94, 94, 94);">
               <!-- the resizable image on top -->
-              <img src="assets/pcloud.png" alt="Modified Image">
+              <img src="assets/pcl.png" alt="Modified Image">
               <span class="cd-image-label" data-type="modified">
               </span>
             </div>
@@ -178,22 +178,10 @@
         <div class="columns is-centered has-text-centered">
           <div class="column is-four-fifths">
             <h2 class="title is-3">Method</h2>
-
+            
             <div class="container is-max-desktop">
               <div class="hero-body">
-                <img src="assets/method.png" style="max-width:100%" />
-                <h2 class="subtitle has-text-centered">
-                </h2>
-              </div>
-            </div>
-            <div class="content has-text-justified">
-            <p>
-              A pre-trained class-agnostic 3D Instance Segmenter proposes initial 3D objects, while a 2D Instance Segmenter generates masks for video frames. Our 2D-guide-3D Instance Proposal Module combines superpoints and 2D instance masks to enhance 3D proposals, integrating them with the initial 3D proposals. Finally, the Pointwise Feature Extraction module correlates instance-aware point cloud CLIP features from multiview images with text embeddings to generate the ultimate instance masks.  
-            </p>
-          </div>
-            <div class="container is-max-desktop">
-              <div class="hero-body">
-                <img src="assets/2d-3d-maskguide.png" style="max-width:100%" />
+                <img src="assets/compare.png" style="max-width:70%" />
                 <h2 class="subtitle has-text-centered">
                 </h2>
               </div>
@@ -201,15 +189,27 @@
 
             <div class="content has-text-justified">
             <p>
-              (Top) The 2D-G-3DIP module utilizes 2D per-frame instance masks to generate per-frame 3D proposals by leveraging 3D superpoints. (Bottom) Our proposed hierarchical merging. These proposals are considered point cloud regions and undergo a hierarchical merging process across multiple views, resulting in the final Augmented 3D proposals
+              Difference between Open3DIS and our Any3DIS. Open3DIS segments all 2D masks across views first, then lifts them to 3D proposals for merging, whereas our approach tracks all 2D masks across views, lifts them directly to 3D proposals, and then refines these proposals through optimization.
             </p>                    
             </div>
+            <div class="container is-max-desktop">
+              <div class="hero-body">
+                <img src="assets/any3dis.png" style="max-width:100%" />
+                <h2 class="subtitle has-text-centered">
+                </h2>
+              </div>
+            </div>
+            <div class="content has-text-justified">
+            <p>
+              We propose a novel class-agnostic approach for 3D instance segmentation through 2D mask tracking. Specifically, we identify each selected superpoint's pivot view within the RGB-D frame sequence, where it is most visible. Using the SAM 2 model, we then obtain the 2D segmentation of this superpoint in the pivot view and track this 2D segmentation across other views. For each 2D mask obtained, we generate a 3D mask candidate by aggregating all 3D superpoints whose projections intersect with any of the 2D masks. These superpoints are then subjected to mask optimization to produce the final refined 3D mask proposal, which is added to the class-agnostic 3D instance segmentation bank, ready for downstream tasks.
+            </p>
+          </div>
           </div>
         </div>
 
       <!-- Concurrent Work. -->
 
-      <br /><br />
+      <!-- <br /><br />
       <div class="columns is-centered">
         <div class="column is-full-width">
           <p id="explanatory-video"></p>
@@ -219,258 +219,30 @@
             Your browser does not support the video tag.
           </video>
           
-          <br /><br />
-
-          <h2 class="title is-3">Quantitative Results</h2>
-          <p class="title is-3 mt-5 has-text-centered"> ScanNet200 </p>
-              <p class="content is-size-6 has-text-justified">
-                OV-3DIS results on <b>ScanNet200</b>. Our proposed method achieves the highest AP, outperforming previous methods in all metrics. The best results are in <b>bold</b>. [Using 3D backbone ISBNet or Mask3D gains no significant different. Below 3D exps use ISBNet] (updated on 2024, Mar. 19th).
-              </p>
-              <p>
-                \[
-                \begin{array}{lccccccc}
-                \hline
-                \textbf{Method} & \text{Backbone3D} & \textbf{AP} & \textbf{AP$_{50}$} & \textbf{AP$_{25}$}  & \textbf{AP$_{head}$} & \textbf{AP$_{com}$} & \textbf{AP$_{tail}$}  \\
-                \hline
-                \text{OpenScene} & \text{DBScan} & 2.8 & 7.8 & 18.6 & 2.7 & 3.1 & 2.6 \\
-                \text{OpenScene} & \text{Mask3D} & 11.7 & 15.2 & 17.8 & 13.4 & 11.6 & 9.9 \\
-                \text{SAM3D (SAM)} &  &  6.1 & 14.2 & 21.3 & 7.0 & 6.2 & 4.6 \\
-                \text{OVIR-3D (G-SAM)} &  & 13.0 & 24.9 & 32.3 & 14.4 & 12.7 & 11.7 \\
-                \text{OpenIns3D (Synthetic-Scene)} & \text{Mask3D} & 8.8 & 10.3 & 14.4 & 16.0 & 6.5 & 4.2 \\
-                \text{OpenMask3D} & \text{Mask3D} & 15.4 & 19.9 & 23.1 & 17.1 & 14.1 & 14.9 \\
-                \hline
-                \textbf{Ours} \text{ (G-SAM)} &  & 18.2 & {26.1} & 31.4 & 18.9 & 16.5 & {19.2} \\
-                \textbf{Ours} \text{ (3D)} & \text{ISBNet} & {18.6} & 23.1 & 27.3 & {24.7} & {16.9} & 13.3 \\
-                \textbf{Ours} \text{ (3D)} & \text{Mask3D} & {18.9} & 24.3 & 28.3 & {23.9} & {17.4} & 15.3 \\
-                \textbf{Ours} \text{ (3D + G-SAM)} & \text{ISBNet} &  \textbf{23.7}& \textbf{29.4} & {32.8} & \textbf{27.8} & {21.2} & {21.8} \\
-                \textbf{Ours} \text{ (3D + G-SAM)} & \text{Mask3D} & \textbf{23.7} & {29.2} & \textbf{33.1} & 26.4 & \textbf{22.5} & \textbf{21.9} \\
-                \hline
-                \end{array}
-                \]
-              </p>
-
-              <p class="content is-size-6 has-text-justified">
-                
-              Class-agnostic 3DIS evalutaion results on <b>ScanNet200</b>! 
-              (updated on 2024, Mar. 29th) [not in arxiv Dec. 17th] *: unofficial.
-              </p>
-              <p>
-                \[
-                \begin{array}{lccc}
-                \hline
-                \textbf{Method} & \textbf{AP} & \textbf{AP$_{50}$} & \textbf{AP$_{25}$}  & \textbf{AR} & \textbf{AR$_{50}$} & \textbf{AR$_{25}$}  \\
-                \hline
-                \text{Superpoint} & 5.0 & 12.7 & 38.9 \\
-                \text{DBSCAN} & 1.6 & 5.5 & 32.1 \\
-                <!-- \text{UnScene3D}  & 15.9 & 32.2 & 58.5 \\ //sai3d edited -->
-                <!-- \text{SAM3D (SAM)}  & 20.2 & 54.0 & 30.3 \\ //sai3d edited -->
-                \text{OVIR-3D* (Detic)} & 14.4 & 27.5 & 38.8 \\
-                \text{Mask Clustering (CropFormer)} & 17.4 & 33.3 & 46.7 \\
-                <!-- \text{SAI3D (SAM)}  & 30.8 & 50.5 & 70.6 \\ //sai3d edited-->
-                \hline
-                \textbf{Ours} \text{ (3D)} & 40.2 & 50.0 & 54.6 & 66.8 & 80.4 & 87.4 \\
-                \textbf{Ours} \text{ (G-SAM)} & 29.7 & 45.2	& 56.8 & 49.0 & 70.0 & 83.2 \\
-                \textbf{Ours} \text{ (SAM)} & 31.5 & 45.3	& 51.1 & 61.2 & 87.1 & 97.5 \\
-                \textbf{Ours} \text{ (3D + G-SAM)} & 34.6 & 43.1 & 48.5 & 66.2 & 81.6 & 91.4 \\
-                \textbf{Ours} \text{ (3D + SAM)} & 41.5 & 51.6 & 56.3 & 74.8 & 90.9 & 97.8 \\
-                \hline
-                \end{array}
-                \]
-              </p>
-
-          <p class="title is-3 mt-5 has-text-centered"> ScanNet++ </p>
-            <p class="content is-size-6 has-text-justified">
-              Class-agnostic 3DIS evalutaion results on <b>ScanNet++</b>. Using all frames is the same as OpenMask3D sample rate: 10. We use 1554 class instance masks. (Not subset of 100 semantic classes as <a href="https://kaldir.vc.in.tum.de/scannetpp/benchmark/docs">link</a>) 
-              (updated on 2024, Mar. 29th) [not in arxiv Dec. 17th].            </p>
-            <p>
-              \[
-              \begin{array}{lccc}
-              \hline
-              \textbf{Method} & \textbf{AP} & \textbf{AP$_{50}$} & \textbf{AP$_{25}$}  & \textbf{AR} & \textbf{AR$_{50}$} & \textbf{AR$_{25}$}  & \textbf{NOTE} \\
-              \hline
-              \text{ISBNet (3D)} & 6.2 & 10.1  &	16.2  & 10.9 & 16.9 & 25.2 & \text{pretrained Scannet200}&\\
-              \hline
-              \text{SAM3D} & 7.2 & 14.2 & 29.4 &\\
-              \text{SAM-guided Graph Cut} & 12.9 & 25.3 & 43.6 &\\
-              \text{Segment3D} & 12.0 & 22.7 & 37.8 &\\
-              \text{SAI3D (SAM)}  & 17.1 & 31.1 & 49.5 &\\
-              \text {SAMPro3D (SAM)} & 18.9 & 33.7 & 51.6 & \\
-              \hline
-              \textbf{Ours} \text{ (SAM)} & 18.5 & 33.5	& 44.3 &	35.6 & 63.7	 & 82.7 &  \text{100 frames per scene}&\\
-              \textbf{Ours} \text{ (SAM)} & 20.7 & 38.6	& 47.1 &	40.8 & 75.7	 & 91.8 &  \text{all frames per scene}&\\
-              \hline
-              \end{array}
-              \]
-            </p>
-
-            <br /><br />
-            <p class="content is-size-6 has-text-justified"></p>
-            <b>Note: </b> To assess the quality of class-agnostic masks in the 2D context, we utilize all masks generated by the 2D-G-3DIP module without any postprocessing, which typically yields high recall albeit at the cost of precision. In the case of 3D masks, we select the top 100 masks from ISBNet based on their confidence scores. Subsequently, to evaluate the Open-Vocab capability, the class-agnostic masks undergo postprocessing by selecting the top k (where k ranges approximately between 300 and 600) masks with the highest CLIP scores. Final confidence score set to 1.0 (OpenMask3D). Applying some dynamic threshold finetuning can lead to higher precision score!
-            </p>
-
-
-              <!-- <p class="title is-3 mt-5 has-text-centered"> Replica </p>
-              <p class="content is-size-6 has-text-justified">
-                OV-3DIS results on <b>Replica</b>.
-              </p>
-              <p>
-                \[
-                \begin{array}{lccc}
-                \hline
-                \textbf{Method} & \textbf{AP} & \textbf{AP$_{50}$} & \textbf{AP$_{25}$}   \\
-                \hline
-                \text{OpenScene + DBScan}  & 10.9 & 15.6 & 17.3 \\ 
-                \text{OpenMask3D} & 13.1 & 18.4 & 24.2 \\ 
-                \text{OVIR-3D} & 11.1 & 20.5 & 27.5 \\ 
-                \hline
-                \textbf{Ours} & \textbf{18.1} & \textbf{26.7} & \textbf{30.5} \\
-                \hline
-                \end{array}
-                \]
-              </p>
-
-              <p class="title is-3 mt-5 has-text-centered"> S3DIS </p>
-              <p class="content is-size-6 has-text-justified">
-                OV-3DIS results on <b>S3DIS</b>.
-              </p>
-              <p>
-                \[
-                \begin{array}{lcccc}
-                \hline
-                \textbf{Method} & \multicolumn{2}{c}{\textbf{B8/N4}} & \multicolumn{2}{c}{\textbf{B6/N6}} \\
-                & \textbf{AP}$^{B}_{50}$ & \textbf{AP}$^N_{50}$ & \textbf{AP}$^{B}_{50}$ & \textbf{AP}$^N_{50}$ \\
-                \midrule
-                \text{LSeg-3D}  & 58.3 & 0.3 & 41.1 & 0.5 \\
-                \text{PLA} & 59.0 & 8.6 & 46.9 & 9.8 \\
-                \text{Lowis3D} & 58.7 & 13.8 & \textbf{51.8} & 15.8 \\
-                \hline
-                \textbf{Ours} & \textbf{60.8} & \textbf{26.3} & 50.0 & \textbf{29.0} \\
-                \hline
-                \end{array}
-                \]
-              </p> -->
-
+          <br /><br /> -->
           
           <br /><br />
-          <h2 class="title is-3">Qualitative Results</h2>
-          <!-- <h2 class="title is-4 mt-5 has-text-centered">Point-wise vs Superpoint-wise mask</h2> -->
-          <figure class="cd-image-container">
-            <img src="assets/2d3d.png" alt="Original Image">
-            <span class="cd-image-label" data-type="original">
-            </span>
-
-            <div class="cd-resize-img" style="border-right: 2px dotted rgb(94, 94, 94);">
-              <!-- the resizable image on top -->
-              <img src="assets/ovir3d.png" alt="Modified Image">
-              <span class="cd-image-label" data-type="modified">
-              </span>
-            </div>
-
-            <span class="cd-handle"></span>
-          </figure>
-
-          <br /><br />
-
-          <figure class="cd-image-container">
-            <img src="assets/scannetpp_result.png" alt="Original Image">
-            <span class="cd-image-label" data-type="original">
-            </span>
-
-            <div class="cd-resize-img" style="border-right: 2px dotted rgb(94, 94, 94);">
-              <!-- the resizable image on top -->
-              <img src="assets/scannetpp_pcloud.png" alt="Modified Image">
-              <span class="cd-image-label" data-type="modified">
-              </span>
-            </div>
-
-            <span class="cd-handle"></span>
-          </figure>
-
-          <br /><br />
-
-          <figure class="cd-image-container">
-            <img src="assets/scannet_arbitarytext_res.png" alt="Original Image">
-            <span class="cd-image-label" data-type="original">
-            </span>
-
-            <div class="cd-resize-img" style="border-right: 2px dotted rgb(94, 94, 94);">
-              <!-- the resizable image on top -->
-              <img src="assets/scannet_arbitarytext.png" alt="Modified Image">
-              <span class="cd-image-label" data-type="modified">
-              </span>
-            </div>
-
-            <span class="cd-handle"></span>
-          </figure>
-
-          <br /><br />
-
-          <figure class="cd-image-container">
-            <img src="assets/scannet_arbitarytext0_res.png" alt="Original Image">
-            <span class="cd-image-label" data-type="original">
-            </span>
-
-            <div class="cd-resize-img" style="border-right: 2px dotted rgb(94, 94, 94);">
-              <!-- the resizable image on top -->
-              <img src="assets/scannet_arbitarytext0.png" alt="Modified Image">
-              <span class="cd-image-label" data-type="modified">
-              </span>
-            </div>
-
-            <span class="cd-handle"></span>
-          </figure>
-
-          <br /><br />
-
-          <h2 class="title is-4">Single Image Lifting</h2>
           <div class="container is-max-desktop">
-            <div class="hero-body">
-              <img src="assets/singleview.png" style="max-width:100%" />
-              <h2 class="subtitle has-text-centered">
-                3D instance proposals produced from a single view
-              </h2>
+            <div class="columns is-centered has-text-centered">
+              <div class="column is-four-fifths">
+                <h2 class="title is-3">ScanNet++ Benchmark</h2>
+                <div class="container is-max-desktop">
+                  <div class="hero-body">
+                    <img src="assets/qualitative_result.png" style="max-width:100%" />
+                    <h2 class="subtitle has-text-centered">
+                      3D instance proposals from ScanNet++ dataset
+                    </h2>
+                </div>
             </div>
           </div>
-          <h2 class="title is-4">ScanNet200 Benchmark</h2>
-          <div class="container is-max-desktop">
-            <div class="hero-body">
-              <img src="assets/scannet200.png" style="max-width:100%" />
-              <h2 class="subtitle has-text-centered">
-                3D instance proposals results on ScanNet200. Orange Circle indicates the focus region
-              </h2>
-            </div>
           </div>
-
-          <h2 class="title is-4">Open-Vocabulary Exploration</h2>
-          <div class="container is-max-desktop">
-            <div class="hero-body">
-              <!-- <img src="assets/openvocab_explore.png" style="max-width:100%" /> -->
-              <img src="assets/openvocab_explore.png", width="100%", height="100%" />
-              <h2 class="subtitle has-text-centered">
-                Open-Vocabulary exploration on ARKitScenes (Left) and ScanNet200 (Right)
-              </h2>
-            </div>
           </div>
-
-
-
-          <h2 class="title is-3">Related Work</h2>
-          <div class="content has-text-justified">
-          <a href="https://github.com/shiyoung77/OVIR-3D">OVIR-3D: Open-Vocabulary 3D Instance Retrieval Without Training on 3D Data</a>
           <br /><br />
-          <a href="https://openmask3d.github.io">OpenMask3D: Open-Vocabulary 3D Instance Segmentation</a>
-          <br /><br />
-          <a href="https://pengsongyou.github.io/openscene">OpenScene: 3D Scene Understanding with Open Vocabularies</a>
-
-          <p id="bibtex"></p>
           <h2 class="title is-3">BibTeX</h2>
           <pre><code>
-            @inproceedings{nguyen2023open3dis,
-              title={Open3DIS: Open-Vocabulary 3D Instance Segmentation with 2D Mask Guidance}, 
-              author={Phuc D. A. Nguyen and Tuan Duc Ngo and Evangelos Kalogerakis and Chuang Gan and Anh Tran and Cuong Pham and Khoi Nguyen},
-              year={2024},
-              booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}}
+            Not Yet
           </code></pre>
+        </div>
         </div>
 
       <footer class="footer">
